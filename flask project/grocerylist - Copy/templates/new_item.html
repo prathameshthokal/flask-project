@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="content-section">
+        <h2 class="border-bottom mb-4">{{ legend }}</h2>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+
+            <!-- Item Name -->
+            <div class="form-group">
+                {{ form.name.label(class="form-control-label") }}
+                {% if form.name.errors %}
+                    {{ form.name(class="form-control is-invalid") }}
+                    {% for error in form.name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                {% else %}
+                    {{ form.name(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <!-- Quantity -->
+            <div class="form-group">
+                {{ form.quantity.label(class="form-control-label") }}
+                {% if form.quantity.errors %}
+                    {{ form.quantity(class="form-control is-invalid") }}
+                    {% for error in form.quantity.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                {% else %}
+                    {{ form.quantity(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+                {{ form.category.label(class="form-control-label") }}
+                {% if form.category.errors %}
+                    {{ form.category(class="form-control is-invalid") }}
+                    {% for error in form.category.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                {% else %}
+                    {{ form.category(class="form-control") }}
+                {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group mt-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

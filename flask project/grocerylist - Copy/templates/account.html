@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+            <form method="POST" action="" enctype="multipart/form-data">    <!--action = "" means the form will be submitted on same URL-->
+            <!-- enctype="multipart/form-data" is an attribute used in HTML forms when you need to upload files, such as images, PDFs, or any other documents. -->
+                {{ form.hidden_tag() }}        <!-- Generates hidden CSRF token  CSRF Protection: Ensures that forms can’t be submitted from external sources without the correct token.-->
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Account Info</legend>
+                    <div class="form-group">
+                        {{ form.username.label(class="form-control-label") }}
+                        {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                        {%for error in form.username.errors %}
+                        {{error}}
+                        {% endfor %}
+                        {% else %}
+                        {{ form.username(class="form-control form-control-lg") }}
+                        {% endif %}
+            
+                    <div class="form-group">
+                        {{ form.email.label(class="form-control-label") }}
+                        {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        {% for error in form.email.errors %}
+                        {{error}}
+                        {% endfor %}
+                        {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                        {%endif%}
+                    </div>
+                </fieldset>
+                <div class="form-group mt-2">
+                    {{ form.submit(class="btn btn-outline-info") }}
+                </div>
+            </form>
+    </div>
+{% endblock %}

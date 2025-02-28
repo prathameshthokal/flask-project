@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block content %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .grocery-box {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .grocery-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .grocery-table th, .grocery-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .grocery-table th {
+            background-color: #007bff;
+            color: white;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+    </style>
+
+    <h2>Welcome, {{ current_user.username }}!</h2>
+    <h3>Your Grocery List</h3>
+
+    <div class="container mt-4">
+        <div class="grocery-box">
+            <h4>Grocery Items</h4>
+            <table class="grocery-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Category</th>
+                        <th>Purchased</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.category }}</td>
+                            <td>
+                                <input type="checkbox" name="purchased">
+                            </td>
+                            <td class="action-buttons">
+                                <a href="{{ url_for('edit_item', item_id=item.id) }}" class="btn btn-primary btn-small">Edit</a>
+                                <a href="{{ url_for('delete_item', item_id=item.id) }}" class="btn btn-danger btn-small">Delete</a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
