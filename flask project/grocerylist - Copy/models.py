@@ -21,5 +21,13 @@ class Items(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     category = db.Column(db.String(80), nullable=False)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'quantity': self.quantity,
+            'category': self.category
+        }
+
     def __repr__(self):
         return f"Items('{self.name},{self.quantity},{self.category}')"
