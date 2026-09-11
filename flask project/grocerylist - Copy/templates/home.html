@@ -12,6 +12,24 @@
             padding: 15px;
             margin-top: 20px;
         }
+        .grocery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .search-container {
+            display: flex;
+            gap: 8px;
+        }
+        .search-input {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
         .grocery-table {
             width: 100%;
             border-collapse: collapse;
@@ -40,7 +58,13 @@
 
     <div class="container mt-4">
         <div class="grocery-box">
-            <h4>Grocery Items</h4>
+            <div class="grocery-header">
+                <h4 style="margin: 0;">Grocery Items</h4>
+                <form id="search-form" action="{{ url_for('home') }}" method="GET" class="search-container">
+                    <input type="text" id="search-input" name="q" value="{{ query if query else '' }}" placeholder="Search products..." class="search-input">
+                    <button type="submit" class="btn btn-primary btn-small">Search</button>
+                </form>
+            </div>
             <table class="grocery-table">
                 <thead>
                     <tr>
@@ -51,25 +75,77 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for item in items %}
+                <tbody id="items-table-body">
+                    {% if items %}
+                        {% for item in items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.category }}</td>
+                                <td>
+                                    <input type="checkbox" name="purchased">
+                                </td>
+                                <td class="action-buttons">
+                                    <a href="{{ url_for('edit_item', item_id=item.id) }}" class="btn btn-primary btn-small">Edit</a>
+                                    <a href="{{ url_for('delete_item', item_id=item.id) }}" class="btn btn-danger btn-small">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
                         <tr>
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ item.category }}</td>
-                            <td>
-                                <input type="checkbox" name="purchased">
-                            </td>
-                            <td class="action-buttons">
-                                <a href="{{ url_for('edit_item', item_id=item.id) }}" class="btn btn-primary btn-small">Edit</a>
-                                <a href="{{ url_for('delete_item', item_id=item.id) }}" class="btn btn-danger btn-small">Delete</a>
-
-                            </td>
+                            <td colspan="5" style="text-align: center;">No matching products found.</td>
                         </tr>
-                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const searchForm = document.getElementById('search-form');
+            const tableBody = document.getElementById('items-table-body');
+
+            function fetchAndRenderProducts(query) {
+                fetch(`/api/products/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(products => {
+                        tableBody.innerHTML = '';
+                        if (products.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No matching products found.</td></tr>';
+                            return;
+                        }
+                        products.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.name}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.category}</td>
+                                <td><input type="checkbox" name="purchased"></td>
+                                <td class="action-buttons">
+                                    <a href="/item/${item.id}/edit" class="btn btn-primary btn-small">Edit</a>
+                                    <a href="/item/${item.id}/delete" class="btn btn-danger btn-small">Delete</a>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    .catch(err => console.error('Error fetching search results:', err));
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    fetchAndRenderProducts(this.value);
+                });
+            }
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    fetchAndRenderProducts(searchInput.value);
+                });
+            }
+        });
+    </script>
 {% endblock %}
