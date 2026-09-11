@@ -1,5 +1,4 @@
-
-from flask import render_template,redirect,url_for,flash,request
+from flask import render_template,redirect,url_for,flash,request,jsonify
 from grocerylist import app, db, bcrypt
 from grocerylist.forms import RegistrationForm,LoginForm,AddItemForm,UpdateAccountForm
 from grocerylist.models import User, Items
@@ -8,9 +7,26 @@ from flask_login import login_user,logout_user,login_required,current_user
 @app.route("/")
 @app.route("/home", methods=['POST', 'GET'])
 def home():
-    items = Items.query.all()  
-    return render_template('home.html', title='home', items=items)
+    query = request.args.get('q', '')
+    if query:
+        items = Items.query.filter(
+            (Items.name.ilike(f'%{query}%')) | (Items.category.ilike(f'%{query}%'))
+        ).all()
+    else:
+        items = Items.query.all()
+    return render_template('home.html', title='home', items=items, query=query)
 
+@app.route("/api/products", methods=['GET'])
+@app.route("/api/products/search", methods=['GET'])
+def search_products():
+    query = request.args.get('q') or request.args.get('query') or ''
+    if query:
+        items = Items.query.filter(
+            (Items.name.ilike(f'%{query}%')) | (Items.category.ilike(f'%{query}%'))
+        ).all()
+    else:
+        items = Items.query.all()
+    return jsonify([item.to_dict() for item in items])
 
 @app.route("/about")
 def about():
@@ -117,9 +133,3 @@ def delete_item(item_id):
     db.session.commit()
     flash('Item deleted!', 'success')
     return redirect(url_for('home'))
-
-
-
-
-
-
