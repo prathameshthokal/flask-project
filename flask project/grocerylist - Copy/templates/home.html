@@ -33,6 +33,11 @@
             padding: 5px 10px;
             font-size: 14px;
         }
+        .search-container {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
     </style>
 
     <h2>Welcome, {{ current_user.username }}!</h2>
@@ -41,6 +46,13 @@
     <div class="container mt-4">
         <div class="grocery-box">
             <h4>Grocery Items</h4>
+            <form method="GET" action="{{ url_for('home') }}" class="search-container">
+                <input type="text" name="search" class="form-control" placeholder="Search items by name..." value="{{ search_query if search_query else '' }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if search_query %}
+                    <a href="{{ url_for('home') }}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </form>
             <table class="grocery-table">
                 <thead>
                     <tr>
