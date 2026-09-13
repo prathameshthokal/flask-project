@@ -1,4 +1,3 @@
-
 from flask import render_template,redirect,url_for,flash,request
 from grocerylist import app, db, bcrypt
 from grocerylist.forms import RegistrationForm,LoginForm,AddItemForm,UpdateAccountForm
@@ -8,8 +7,12 @@ from flask_login import login_user,logout_user,login_required,current_user
 @app.route("/")
 @app.route("/home", methods=['POST', 'GET'])
 def home():
-    items = Items.query.all()  
-    return render_template('home.html', title='home', items=items)
+    search_query = request.args.get('search', '')
+    if search_query:
+        items = Items.query.filter(Items.name.ilike(f'%{search_query}%')).all()
+    else:
+        items = Items.query.all()  
+    return render_template('home.html', title='home', items=items, search_query=search_query)
 
 
 @app.route("/about")
@@ -117,9 +120,3 @@ def delete_item(item_id):
     db.session.commit()
     flash('Item deleted!', 'success')
     return redirect(url_for('home'))
-
-
-
-
-
-
